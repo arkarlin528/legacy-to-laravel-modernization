@@ -172,7 +172,11 @@ jobs:
     needs: [laravel, dotnet]
     steps:
       - uses: actions/checkout@v4
-      - run: cp .env.example .env && docker compose build
+      - name: Build images (throwaway APP_KEY, generated per run)
+        run: |
+          cp .env.example .env
+          sed -i "s|^APP_KEY=.*|APP_KEY=base64:$(openssl rand -base64 32)|" .env
+          docker compose build
 
   secrets:
     name: Secret scan
