@@ -1,0 +1,186 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  laravel:
+    name: Laravel tests (Pest) + style
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: modernized_orders_test
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U ci" --health-interval 5s --health-timeout 3s --health-retries 20
+    defaults:
+      run:
+        working-directory: laravel-app
+    env:
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: ci
+      DB_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_pgsql, bcmath, intl
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: vendor/bin/pest
+      - run: vendor/bin/pint --test
+
+  dotnet:
+    name: Migrator tests + legacy build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet test migrator
+      - run: dotnet build legacy-api
+
+  end-to-end:
+    name: Migrate legacy → new, then prove parity
+    runs-on: ubuntu-latest
+    needs: [laravel, dotnet]
+    services:
+      legacydb:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: CiOnly_Passw0rd!
+        ports: ["1433:1433"]
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'CiOnly_Passw0rd!' -C -Q 'SELECT 1' || exit 1"
+          --health-interval 10s --health-timeout 5s --health-retries 12 --health-start-period 20s
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: orders
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U ci" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      LEGACY_DB: "Server=127.0.0.1,1433;Database=LegacyOrders;User Id=sa;Password=CiOnly_Passw0rd!;TrustServerCertificate=True"
+      TARGET_DB: "Host=127.0.0.1;Database=orders;Username=ci;Password=ci-only-password"
+      API_KEY: ci-legacy-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_pgsql, bcmath, intl
+          coverage: none
+
+      - name: Create the legacy database (schema, stored procedures, fictional data)
+        run: |
+          id=${{ job.services.legacydb.id }}
+          docker cp legacy-api/db/. $id:/tmp/db
+          S="/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P CiOnly_Passw0rd! -C -b -I"
+          docker exec $id $S -Q "CREATE DATABASE LegacyOrders"
+          for f in 01-schema.sql 02-procedures.sql 03-seed.sql; do docker exec $id $S -d LegacyOrders -i /tmp/db/$f; done
+
+      - name: Start the legacy API on :5100
+        run: |
+          dotnet build legacy-api -c Release
+          nohup dotnet run --no-build -c Release --project legacy-api --urls http://127.0.0.1:5100 > legacy.log 2>&1 &
+          for i in $(seq 1 30); do curl -fs http://127.0.0.1:5100/health && break; sleep 2; done
+        env:
+          ConnectionStrings__Legacy: ${{ env.LEGACY_DB }}
+          ApiKey: ci-legacy-key
+
+      - name: Prepare Laravel (schema only)
+        working-directory: laravel-app
+        run: |
+          composer install --no-interaction --prefer-dist
+          cp .env.example .env && php artisan key:generate
+          php artisan migrate --force
+        env: &laravel-env
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: orders
+          DB_USERNAME: ci
+          DB_PASSWORD: ci-only-password
+          LEGACY_API_KEY: ci-legacy-key
+
+      - name: Migrate the data (and verify every row)
+        run: dotnet run --project migrator/src -- --report migration-report.md
+
+      - name: Start Laravel on :8000
+        working-directory: laravel-app
+        run: |
+          nohup php artisan serve --port=8000 > ../laravel.log 2>&1 &
+          for i in $(seq 1 30); do curl -fs http://127.0.0.1:8000/up && break; sleep 2; done
+        env: *laravel-env
+
+      - name: Parity — every read endpoint answers identically on both systems
+        working-directory: contract-tests
+        run: |
+          composer install --no-interaction --prefer-dist
+          vendor/bin/pest --testsuite=Parity
+        env:
+          LEGACY_URL: http://127.0.0.1:5100
+          CANDIDATE_URL: http://127.0.0.1:8000
+
+      - name: Contract suite against the legacy API (the reference)
+        working-directory: contract-tests
+        run: vendor/bin/pest --testsuite=Contract
+        env:
+          BASE_URL: http://127.0.0.1:5100
+
+      - name: Contract suite against the Laravel rewrite
+        working-directory: contract-tests
+        run: vendor/bin/pest --testsuite=Contract
+        env:
+          BASE_URL: http://127.0.0.1:8000
+
+      - name: Contract suite through the strangler facade (phase 2: mixed routing)
+        run: |
+          sudo apt-get install -y nginx > /dev/null
+          cd facade && mkdir -p logs temp
+          cp upstreams.local.conf upstreams.conf && cp phases/2-read-only-slice.conf routing.conf
+          sudo nginx -p "$PWD/" -c nginx.conf
+          cd ../contract-tests && BASE_URL=http://127.0.0.1:8088 vendor/bin/pest --testsuite=Contract
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: migration-report-and-logs
+          path: |
+            migration-report.md
+            legacy.log
+            laravel.log
+
+  docker:
+    name: Docker images build
+    runs-on: ubuntu-latest
+    needs: [laravel, dotnet]
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .env.example .env && docker compose build
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

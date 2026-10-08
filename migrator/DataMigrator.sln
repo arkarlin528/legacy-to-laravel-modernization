@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataMigrator", "src\DataMigrator.csproj", "{B4B3FD74-AA0C-494B-86D6-8E97E8253280}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataMigrator.Tests", "tests\DataMigrator.Tests.csproj", "{60C8B9EA-FBB7-4159-91B0-4323E4F374B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4B3FD74-AA0C-494B-86D6-8E97E8253280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4B3FD74-AA0C-494B-86D6-8E97E8253280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4B3FD74-AA0C-494B-86D6-8E97E8253280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4B3FD74-AA0C-494B-86D6-8E97E8253280}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60C8B9EA-FBB7-4159-91B0-4323E4F374B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60C8B9EA-FBB7-4159-91B0-4323E4F374B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60C8B9EA-FBB7-4159-91B0-4323E4F374B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60C8B9EA-FBB7-4159-91B0-4323E4F374B0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

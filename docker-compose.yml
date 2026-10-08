@@ -1,0 +1,128 @@
+# The whole modernization in one stack:
+#   legacy SQL Server + legacy .NET API  →  migrator  →  PostgreSQL + Laravel  ←  nginx strangler facade
+#
+#   cp .env.example .env && docker compose up --build
+#   Facade (what clients call): http://localhost:8088/api/customers  (header X-Api-Key: $LEGACY_API_KEY)
+#   Admin panel:                http://localhost:8088/admin          (admin@demo.test / $ADMIN_PASSWORD)
+#   API docs:                   http://localhost:8088/docs
+#
+# Change PHASE (0-legacy-only, 1-shadow, 2-read-only-slice, 3a-freeze, 3b-cutover) and `docker compose up -d facade`.
+
+services:
+  legacy-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # Creates the legacy schema, stored procedures and fictional data once.
+  legacy-db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      legacy-db:
+        condition: service_healthy
+    volumes:
+      - ./legacy-api/db:/scripts:ro
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    entrypoint: >
+      bash -c '
+        S="/opt/mssql-tools18/bin/sqlcmd -S legacy-db -U sa -P $$MSSQL_SA_PASSWORD -C -b -I";
+        $$S -Q "IF DB_ID(N'"'"'LegacyOrders'"'"') IS NULL CREATE DATABASE LegacyOrders" &&
+        for f in 01-schema.sql 02-procedures.sql 03-seed.sql; do $$S -d LegacyOrders -i /scripts/$$f || exit 1; done'
+    restart: "no"
+
+  legacy-api:
+    build: ./legacy-api
+    depends_on:
+      legacy-db-init:
+        condition: service_completed_successfully
+    environment:
+      ConnectionStrings__Legacy: "Server=legacy-db;Database=LegacyOrders;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
+      ApiKey: ${LEGACY_API_KEY:?Set LEGACY_API_KEY in .env}
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: orders
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orders -d orders"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  laravel:
+    build: ./laravel-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: &laravel-env
+      APP_ENV: production
+      APP_KEY: ${APP_KEY:?Set APP_KEY in .env (php artisan key:generate --show)}
+      APP_URL: http://localhost:8088
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_DATABASE: orders
+      DB_USERNAME: orders
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      LEGACY_API_KEY: ${LEGACY_API_KEY}
+      LEGACY_TIMEZONE: Asia/Bangkok
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8080/up || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  # Creates the back-office login (business data comes from the migrator, not from seeders).
+  laravel-seed:
+    build: ./laravel-app
+    depends_on:
+      laravel:
+        condition: service_healthy
+    environment:
+      <<: *laravel-env
+      AUTORUN_ENABLED: "false"
+    command: ["php", "/var/www/html/artisan", "db:seed", "--force"]
+    restart: "no"
+
+  # Copies + verifies all legacy data into PostgreSQL, then exits. Re-run any time to catch up:
+  #   docker compose run --rm migrator
+  migrator:
+    build: ./migrator
+    depends_on:
+      legacy-db-init:
+        condition: service_completed_successfully
+      laravel:
+        condition: service_healthy   # schema exists once Laravel has migrated
+    environment:
+      LEGACY_DB: "Server=legacy-db;Database=LegacyOrders;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
+      TARGET_DB: "Host=postgres;Database=orders;Username=orders;Password=${POSTGRES_PASSWORD}"
+    volumes:
+      - ./docs:/reports
+    restart: "no"
+
+  facade:
+    build: ./facade
+    depends_on:
+      - legacy-api
+      - laravel
+    environment:
+      PHASE: ${PHASE:-0-legacy-only}
+    ports:
+      - "8088:8088"
+
+volumes:
+  pgdata:

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    The "legacy" system being modernized. It runs on .NET 8 so it's easy to start locally, but it is
+    written the way many older ASP.NET Web API 2 apps were: ADO.NET + stored procedures, logic in
+    controllers, a static SQL helper, and Web API 2's JSON/error conventions. Intentionally not
+    clean code — see ../docs/case-study.md.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>LegacyOrderApi</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.3" />
+  </ItemGroup>
+
+</Project>

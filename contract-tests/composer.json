@@ -1,0 +1,22 @@
+{
+    "name": "portfolio/order-api-contract-tests",
+    "description": "Black-box contract tests for the v1 order API. Run against the legacy service, the Laravel rewrite, or the strangler facade.",
+    "type": "project",
+    "license": "MIT",
+    "require-dev": {
+        "pestphp/pest": "^4.0",
+        "guzzlehttp/guzzle": "^7.9"
+    },
+    "autoload-dev": {
+        "files": ["tests/helpers.php"]
+    },
+    "scripts": {
+        "test": "pest"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    }
+}

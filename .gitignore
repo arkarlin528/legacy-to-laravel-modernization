@@ -1,0 +1,19 @@
+# .NET
+bin/
+obj/
+TestResults/
+.vs/
+*.user
+
+# PHP / Laravel (laravel-app has its own .gitignore too)
+contract-tests/vendor/
+contract-tests/.phpunit.result.cache
+
+# Facade runtime (local nginx)
+facade/logs/
+facade/temp/
+facade/routing.conf
+facade/upstreams.conf
+
+# Secrets
+.env

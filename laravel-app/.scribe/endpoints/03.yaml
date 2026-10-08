@@ -1,0 +1,615 @@
+name: 'Legacy v1 (compatible)'
+description: |-
+
+  The original customer endpoints, served by the new system with an identical contract.
+  Authenticate with the legacy `X-Api-Key` header. New integrations should use /api/v2.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/customers
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: |-
+
+        The original customer endpoints, served by the new system with an identical contract.
+        Authenticate with the legacy `X-Api-Key` header. New integrations should use /api/v2.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List all customers.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"Message":"Authorization has been denied for this request."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/customers
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: |-
+
+        The original customer endpoints, served by the new system with an identical contract.
+        Authenticate with the legacy `X-Api-Key` header. New integrations should use /api/v2.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create a customer.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      Code:
+        custom: []
+        name: Code
+        description: 'Up to 10 characters, unique.'
+        required: true
+        example: NEWCO
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      Name:
+        custom: []
+        name: Name
+        description: ''
+        required: true
+        example: 'New Company Ltd'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      Email:
+        custom: []
+        name: Email
+        description: ''
+        required: false
+        example: ops@newco.example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      Phone:
+        custom: []
+        name: Phone
+        description: ''
+        required: false
+        example: '+66 2100 1000'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      Country:
+        custom: []
+        name: Country
+        description: '2-letter code, defaults to TH.'
+        required: false
+        example: TH
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      Code: NEWCO
+      Name: 'New Company Ltd'
+      Email: ops@newco.example.com
+      Phone: '+66 2100 1000'
+      Country: TH
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 400
+        content: '{"Message":"The request is invalid.","ModelState":{"Name":["Name is required (max 100 characters)."]}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"Message":"Authorization has been denied for this request."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+      -
+        custom: []
+        status: 409
+        content: '{"Message":"Customer code already exists"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/customers/{id}'
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: |-
+
+        The original customer endpoints, served by the new system with an identical contract.
+        Authenticate with the legacy `X-Api-Key` header. New integrations should use /api/v2.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get one customer.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the customer.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"CustomerId":4,"Code":"SGCT","Name":"Saigon Coffee Traders","Email":"ops@sgct.example.com","Phone":"+84 2100 1657","Country":"VN","IsActive":true,"CreatedDate":"2020-04-20T09:53:00"}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"Message":"Authorization has been denied for this request."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: '{"Message":"Customer not found"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/customers/{id}/invoices'
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: |-
+
+        The original customer endpoints, served by the new system with an identical contract.
+        Authenticate with the legacy `X-Api-Key` header. New integrations should use /api/v2.
+      subgroup: ''
+      subgroupDescription: ''
+      title: "List a customer's invoices."
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the customer.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '[{"InvoiceId":14,"InvoiceNo":"INV-2024-00014","OrderId":16,"InvoiceDate":"2024-08-10T17:57:00","DueDate":"2024-09-09T17:57:00","Amount":171.42,"IsPaid":true,"PaidDate":"2024-09-03T17:57:00"}]'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/orders
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List orders.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      customerId:
+        custom: []
+        name: customerId
+        description: 'Filter by customer.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      status:
+        custom: []
+        name: status
+        description: 'Legacy status code: 1 Open, 2 Confirmed, 3 Shipped, 4 Cancelled.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      customerId: 3
+      status: 3
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"Message":"Authorization has been denied for this request."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/orders
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create an order.'
+      description: 'The total is calculated from the lines and the order number is assigned by the server.'
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      CustomerId:
+        custom: []
+        name: CustomerId
+        description: ''
+        required: true
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      Origin:
+        custom: []
+        name: Origin
+        description: '5-letter UN/LOCODE.'
+        required: true
+        example: THLCH
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      Destination:
+        custom: []
+        name: Destination
+        description: ''
+        required: true
+        example: SGSIN
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      Currency:
+        custom: []
+        name: Currency
+        description: 'Defaults to USD.'
+        required: false
+        example: USD
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      Remarks:
+        custom: []
+        name: Remarks
+        description: ''
+        required: false
+        example: 'Fragile goods'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      Lines:
+        custom: []
+        name: Lines
+        description: ''
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'Lines[].Description':
+        custom: []
+        name: 'Lines[].Description'
+        description: ''
+        required: true
+        example: 'Ocean freight 20GP'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'Lines[].Quantity':
+        custom: []
+        name: 'Lines[].Quantity'
+        description: ''
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'Lines[].UnitPrice':
+        custom: []
+        name: 'Lines[].UnitPrice'
+        description: ''
+        required: true
+        example: 950.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      CustomerId: 3
+      Origin: THLCH
+      Destination: SGSIN
+      Currency: USD
+      Remarks: 'Fragile goods'
+      Lines:
+        -
+          Description: 'Ocean freight 20GP'
+          Quantity: 1
+          UnitPrice: 950.0
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"Message":"Authorization has been denied for this request."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get one order with its lines.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the order.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"OrderId":17,"OrderNo":"ORD-2023-000006","CustomerId":3,"OrderDate":"2023-02-18T08:58:00","Status":3,"StatusText":"Shipped","Origin":"THBKK","Destination":"VNSGN","Total":643.45,"Currency":"USD","Remarks":"Customer will collect from port","Lines":[{"LineNo":1,"Description":"Documentation fee","Quantity":3,"UnitPrice":29.67,"Amount":89.01}]}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: '{"Message":"Order not found"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/orders/{id}/cancel'
+    metadata:
+      custom: []
+      groupName: 'Legacy v1 (compatible)'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Cancel an open or confirmed order.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      X-Api-Key: '{LEGACY_API_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the order.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"Message":"Authorization has been denied for this request."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+      -
+        custom: []
+        status: 409
+        content: '{"Message":"Shipped orders cannot be cancelled"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

@@ -1,0 +1,133 @@
+name: 'v2 Customers'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v2/customers
+    metadata:
+      custom: []
+      groupName: 'v2 Customers'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List customers (paginated).'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      search:
+        custom: []
+        name: search
+        description: 'Matches code or name.'
+        required: false
+        example: rice
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      active:
+        custom: []
+        name: active
+        description: ''
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: '1-100, default 25.'
+        required: false
+        example: 25
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanQueryParameters:
+      search: rice
+      active: true
+      per_page: 25
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":31,"code":"ZM06IY","name":"Ernser Group","email":"idickens@example.org","phone":"1-820-420-3724","country":"MM","is_active":true,"created_at":"2026-10-08T12:18:14Z"},{"id":32,"code":"LV32QW","name":"McLaughlin, Leuschke and Bauch","email":"okeefe.isidro@example.org","phone":"1-915-230-6227","country":"TH","is_active":true,"created_at":"2026-10-08T12:18:14Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"\/?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"\/","per_page":25,"to":2,"total":2}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/customers/{id}'
+    metadata:
+      custom: []
+      groupName: 'v2 Customers'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get one customer.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the customer.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":33,"code":"WP80WL","name":"Leuschke Inc","email":"imclaughlin@example.org","phone":"+1-715-952-7161","country":"SG","is_active":true,"created_at":"2026-10-08T12:18:14Z"}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

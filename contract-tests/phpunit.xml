@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
+    <testsuites>
+        <testsuite name="Contract">
+            <directory>tests/Contract</directory>
+        </testsuite>
+        <testsuite name="Parity">
+            <directory>tests/Parity</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- Override with environment variables, e.g. BASE_URL=http://127.0.0.1:8000 vendor/bin/pest -->
+        <env name="BASE_URL" value="http://127.0.0.1:5100" force="false"/>
+        <env name="API_KEY" value="legacy-dev-key" force="false"/>
+    </php>
+</phpunit>

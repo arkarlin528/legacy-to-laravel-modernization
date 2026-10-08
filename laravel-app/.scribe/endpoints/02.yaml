@@ -1,0 +1,349 @@
+name: 'v2 Orders'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v2/orders
+    metadata:
+      custom: []
+      groupName: 'v2 Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List orders (paginated, newest first).'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      customer_id:
+        custom: []
+        name: customer_id
+        description: ''
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      status:
+        custom: []
+        name: status
+        description: 'open, confirmed, shipped or cancelled.'
+        required: false
+        example: shipped
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: '1-100, default 25.'
+        required: false
+        example: 25
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanQueryParameters:
+      customer_id: 3
+      status: shipped
+      per_page: 25
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":163,"order_no":"ORD-2026-936806","status":"open","ordered_at":"2026-02-25T11:32:28Z","origin":"THLCH","destination":"SGSIN","total":{"amount":"0.00","currency":"USD"},"remarks":null,"customer":{"id":34,"code":"IY16VD","name":"Gaylord and Sons","email":"cecil42@example.com","phone":"1-463-692-1881","country":"VN","is_active":true,"created_at":"2026-10-08T12:18:14Z"},"links":{"self":"http:\/\/localhost:8000\/api\/v2\/orders\/163"}},{"id":164,"order_no":"ORD-2026-914902","status":"open","ordered_at":"2026-02-24T15:25:43Z","origin":"THLCH","destination":"SGSIN","total":{"amount":"0.00","currency":"USD"},"remarks":null,"customer":{"id":35,"code":"SI79TC","name":"Predovic Inc","email":"bailee15@example.org","phone":"+1-559-693-2083","country":"SG","is_active":true,"created_at":"2026-10-08T12:18:14Z"},"links":{"self":"http:\/\/localhost:8000\/api\/v2\/orders\/164"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"\/?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"\/","per_page":25,"to":2,"total":2}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v2/orders
+    metadata:
+      custom: []
+      groupName: 'v2 Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create an order.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      customer_id:
+        custom: []
+        name: customer_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      origin:
+        custom: []
+        name: origin
+        description: 'Must contain only letters. Must be 5 characters.'
+        required: true
+        example: ngzmi
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      destination:
+        custom: []
+        name: destination
+        description: 'The value and <code>origin</code> must be different. Must contain only letters. Must be 5 characters.'
+        required: true
+        example: yvdlj
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      currency:
+        custom: []
+        name: currency
+        description: 'Must contain only letters. Must be 3 characters.'
+        required: false
+        example: nik
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      remarks:
+        custom: []
+        name: remarks
+        description: 'Must not be greater than 2000 characters.'
+        required: false
+        example: h
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      lines:
+        custom: []
+        name: lines
+        description: 'Must have at least 1 items. Must not have more than 50 items.'
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].description':
+        custom: []
+        name: 'lines[].description'
+        description: 'Must not be greater than 200 characters.'
+        required: true
+        example: 'Eius et animi quos velit et.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].quantity':
+        custom: []
+        name: 'lines[].quantity'
+        description: 'Must be at least 1. Must not be greater than 10000.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].unit_price':
+        custom: []
+        name: 'lines[].unit_price'
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      customer_id: 16
+      origin: ngzmi
+      destination: yvdlj
+      currency: nik
+      remarks: h
+      lines:
+        -
+          description: 'Eius et animi quos velit et.'
+          quantity: 1
+          unit_price: 4326.41688
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'v2 Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get an order with its lines and invoices.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the order.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"order_no":"ORD-2024-000001","status":"shipped","ordered_at":"2024-12-21T07:07:00Z","origin":"MMRGN","destination":"SGSIN","total":{"amount":"4329.16","currency":"USD"},"remarks":null,"customer":{"id":10,"code":"BRNT","name":"Borneo Timber Supply","email":"ops@brnt.example.com","phone":"(+60) 06553226","country":"MY","is_active":true,"created_at":"2021-07-10T07:03:00Z"},"lines":[{"line_no":1,"description":"Ocean freight 40HC","quantity":2,"unit_price":"2164.58","amount":"4329.16"}],"links":{"self":"http:\/\/localhost:8000\/api\/v2\/orders\/1"}}}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v2/orders/{order_id}/cancel'
+    metadata:
+      custom: []
+      groupName: 'v2 Orders'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Cancel an order.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+      -
+        custom: []
+        status: 409
+        content: '{"message":"Shipped orders cannot be cancelled"}'
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
