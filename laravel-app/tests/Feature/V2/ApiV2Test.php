@@ -28,7 +28,8 @@ it('requires a token and does not accept the legacy key', function () {
 it('pages and searches customers in snake_case', function () {
     actingAsApiUser();
     Customer::factory()->create(['name' => 'Chao Phraya Rice Exports', 'code' => 'CPRE']);
-    Customer::factory()->count(30)->create();
+    // Fixed filler names: random company names like "Price LLC" would also match "rice".
+    Customer::factory()->count(30)->sequence(fn ($s) => ['name' => "Filler Customer {$s->index}"])->create();
 
     $this->getJson('/api/v2/customers?search=rice')
         ->assertOk()
